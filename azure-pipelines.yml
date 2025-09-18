@@ -17,11 +17,9 @@ variables:
   backendContainerName: '40net-ops'
   backendKey: 'terraform.tfstate'
 
-  subscription_id: $(ARM_SUBSCRIPTION_ID)
   prefix: 'jvh11'
   location: 'westeurope'
   username: 'azureuser'
-  password: $(password)
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -96,10 +94,10 @@ stages:
     - task: AzureCLI@2
       displayName: 'Terraform Plan'
       env:
-        TF_VAR_subscription_id: $(subscription_id)
+        TF_VAR_subscription_id: $(ARM_SUBSCRIPTION_ID)
         TF_VAR_prefix: $(prefix)
         TF_VAR_username: $(username)
-        TF_VAR_password: $(passowrd)
+        TF_VAR_password: $(password)
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: 'bash'
