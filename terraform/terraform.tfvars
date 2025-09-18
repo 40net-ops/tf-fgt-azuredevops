@@ -3,19 +3,19 @@
 ############################################################################################################################################
 
 # Added name to each deployed resource
-prefix = ""
+#prefix = ""
 
 # Azure region
-location = ""
+#location = ""
 
 # Username for FortiGate admin
-username = ""
+#username = ""
 
 # Password for FortiGate admin
-password = ""
+#password = ""
 
 # Azure subscription ID
-subscription_id = ""
+#subscription_id = ""
 
 # Azure Marketplace image SKU: PAYG ('fortinet_fg-vm_payg_2023') or BYOL ('fortinet_fg-vm')
 fgt_image_sku = "fortinet_fg-vm"
