@@ -103,10 +103,10 @@ stages:
           export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
           export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
           export ARM_TENANT_ID=$(ARM_TENANT_ID)
-          export TF_VAR_subscription_id: $(ARM_SUBSCRIPTION_ID)
-          export TF_VAR_prefix: $(prefix)
-          export TF_VAR_username: $(username)
-          export TF_VAR_password: $(password)
+          export TF_VAR_subscription_id=$(ARM_SUBSCRIPTION_ID)
+          export TF_VAR_prefix=$(prefix)
+          export TF_VAR_username=$(username)
+          export TF_VAR_password=$(password)
 
           echo "--> $(TF_VAR_subscription_id)"
           echo "--> $(TF_VAR_prefix)"
