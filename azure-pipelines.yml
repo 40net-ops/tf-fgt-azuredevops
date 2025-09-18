@@ -109,8 +109,8 @@ stages:
           export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
           export ARM_TENANT_ID=$(ARM_TENANT_ID)
 
-          echo "--> $(TF_VAR_subscription_id)"
-          echo "--> $(TF_VAR_prefix)"
+          echo "--> $TF_VAR_subscription_id"
+          echo "--> $TF_VAR_prefix"
           
           # Create Terraform plan
           terraform plan -out=tfplan -input=false
