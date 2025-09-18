@@ -1,38 +1,191 @@
 trigger:
 - main
 
+variables:
+  # Terraform version
+  terraformVersion: '1.5.7'
+  
+  # Working directory for Terraform files
+  workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+  
+  # Azure service connection name (replace with your service connection)
+  azureServiceConnection: '40net-ops'
+  
+  # Backend configuration
+  backendResourceGroup: 'jvh01-rg'
+  backendStorageAccount: 'jvh01storage'  # Replace XXXXX with unique identifier
+  backendContainerName: '40net-ops'
+  backendKey: 'terraform.tfstate'
+
 pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-- stage: Plan
-  displayName: 'Terraform Plan'
+- stage: TerraformValidate
+  displayName: 'Terraform Init, Format, Validate & Plan'
   jobs:
   - job: TerraformPlan
     displayName: 'Terraform Plan'
     steps:
+    - checkout: self
+    
     - task: TerraformInstaller@0
+      displayName: 'Install Terraform'
       inputs:
-        terraformVersion: 'latest'
-
-    - script: |
-        terraform --version
-        terraform init -backend-config="storage_account_name=$(storageAccountName)" -backend-config="container_name=$(containerName)" -backend-config="key=$(key)" -backend-config="access_key=$(accessKey)"
-        terraform plan -out=tfplan
-      displayName: 'Terraform Init and Plan'
-
-- stage: Deploy
-  displayName: 'Terraform Apply'
-  jobs:
-  - job: TerraformApply
-    displayName: 'Terraform Apply'
-    steps:
-    - task: TerraformInstaller@0
+        terraformVersion: $(terraformVersion)
+    
+    - task: AzureCLI@2
+      displayName: 'Azure Login & Terraform Init'
       inputs:
-        terraformVersion: 'latest'
+        azureSubscription: $(azureServiceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        workingDirectory: $(workingDirectory)
+        inlineScript: |
+          # Set environment variables for Terraform
+          export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
+          export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
+          export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+          export ARM_TENANT_ID=$(ARM_TENANT_ID)
+          export ARM_ACCESS_KEY=$(ARM_ACCESS_KEY)
+          
+          # Initialize Terraform
+          terraform init \
+            -backend-config="resource_group_name=$(backendResourceGroup)" \
+            -backend-config="storage_account_name=$(backendStorageAccount)" \
+            -backend-config="container_name=$(backendContainerName)" \
+            -backend-config="key=$(backendKey)"
+    
+    - task: AzureCLI@2
+      displayName: 'Terraform Format Check'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        workingDirectory: $(workingDirectory)
+        inlineScript: |
+          # Check if Terraform files are properly formatted
+          terraform fmt -check -recursive
+          if [ $? -ne 0 ]; then
+            echo "##vso[task.logissue type=error]Terraform files are not properly formatted. Run 'terraform fmt -recursive' locally."
+            exit 1
+          fi
+    
+    - task: AzureCLI@2
+      displayName: 'Terraform Validate'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        workingDirectory: $(workingDirectory)
+        inlineScript: |
+          export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
+          export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
+          export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+          export ARM_TENANT_ID=$(ARM_TENANT_ID)
+          
+          # Validate Terraform configuration
+          terraform validate
+    
+    - task: AzureCLI@2
+      displayName: 'Terraform Plan'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        workingDirectory: $(workingDirectory)
+        inlineScript: |
+          export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
+          export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
+          export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+          export ARM_TENANT_ID=$(ARM_TENANT_ID)
+          
+          # Create Terraform plan
+          terraform plan -out=tfplan -input=false
+          
+          # Show plan summary
+          terraform show -no-color tfplan > tfplan.txt
+          
+          # Display plan summary
+          echo "=== Terraform Plan Summary ==="
+          cat tfplan.txt
+    
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Terraform Plan'
+      inputs:
+        targetPath: '$(workingDirectory)/tfplan'
+        artifact: 'terraform-plan'
+        publishLocation: 'pipeline'
+    
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Terraform Plan Text'
+      inputs:
+        targetPath: '$(workingDirectory)/tfplan.txt'
+        artifact: 'terraform-plan-text'
+        publishLocation: 'pipeline'
 
-    - script: |
-        terraform --version
-        terraform init -backend-config="storage_account_name=$(storageAccountName)" -backend-config="container_name=$(containerName)" -backend-config="key=$(key)" -backend-config="access_key=$(accessKey)"
-        terraform apply -auto-approve tfplan
-      displayName: 'Terraform Init and Apply'
+#- stage: TerraformApply
+#  displayName: 'Terraform Apply'
+#  dependsOn: TerraformValidate
+#  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+#  jobs:
+#  - deployment: TerraformDeploy
+#    displayName: 'Deploy Infrastructure'
+#    environment: 'production'  # Replace with your environment name
+#    strategy:
+#      runOnce:
+#        deploy:
+#          steps:
+#          - checkout: self
+#          
+#          - task: TerraformInstaller@0
+#            displayName: 'Install Terraform'
+#            inputs:
+#              terraformVersion: $(terraformVersion)
+#          
+#          - task: DownloadPipelineArtifact@2
+#            displayName: 'Download Terraform Plan'
+#            inputs:
+#              buildType: 'current'
+#              artifactName: 'terraform-plan'
+#              targetPath: '$(workingDirectory)'
+#          
+#          - task: AzureCLI@2
+#            displayName: 'Terraform Init for Apply'
+#            inputs:
+#              azureSubscription: $(azureServiceConnection)
+#              scriptType: 'bash'
+#              scriptLocation: 'inlineScript'
+#              workingDirectory: $(workingDirectory)
+#              inlineScript: |
+#                export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
+#                export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
+#                export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+#                export ARM_TENANT_ID=$(ARM_TENANT_ID)
+#                
+#                # Re-initialize Terraform
+#                terraform init \
+#                  -backend-config="resource_group_name=$(backendResourceGroup)" \
+#                  -backend-config="storage_account_name=$(backendStorageAccount)" \
+#                  -backend-config="container_name=$(backendContainerName)" \
+#                  -backend-config="key=$(backendKey)"
+#          
+#          - task: AzureCLI@2
+#            displayName: 'Terraform Apply'
+#            inputs:
+#              azureSubscription: $(azureServiceConnection)
+#              scriptType: 'bash'
+#              scriptLocation: 'inlineScript'
+#              workingDirectory: $(workingDirectory)
+#              inlineScript: |
+#                export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
+#                export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
+#                export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+#                export ARM_TENANT_ID=$(ARM_TENANT_ID)
+#                
+#                # Apply the Terraform plan
+#                terraform apply -input=false tfplan
+#                
+#                # Show outputs
+#                echo "=== Terraform Outputs ==="
+#                terraform output
