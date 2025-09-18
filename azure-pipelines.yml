@@ -146,6 +146,22 @@ stages:
         terraformVersion: $(terraformVersion)
     
     - task: AzureCLI@2
+      displayName: 'Terraform Init for Apply'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        workingDirectory: $(workingDirectory)
+        inlineScript: |
+          export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
+          export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
+          export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+          export ARM_TENANT_ID=$(ARM_TENANT_ID)
+               
+          # Re-initialize Terraform
+          terraform init -backend=false
+          
+    - task: AzureCLI@2
       displayName: 'FortiCNAPP IaC'
       inputs:
         azureSubscription: $(azureServiceConnection)
