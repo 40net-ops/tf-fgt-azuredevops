@@ -33,7 +33,7 @@ stages:
     steps:
     - checkout: self
     
-    - task: TerraformInstaller@0
+    - task: TerraformInstaller@1
       displayName: 'Install Terraform'
       inputs:
         terraformVersion: $(terraformVersion)
@@ -109,7 +109,8 @@ stages:
           export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
           export ARM_TENANT_ID=$(ARM_TENANT_ID)
 
-          echo $(TF_VAR_subscription_id)
+          echo "--> $(TF_VAR_subscription_id)"
+          echo "--> $(TF_VAR_prefix)"
           
           # Create Terraform plan
           terraform plan -out=tfplan -input=false
@@ -149,7 +150,7 @@ stages:
 #          steps:
 #          - checkout: self
 #          
-#          - task: TerraformInstaller@0
+#          - task: TerraformInstaller@1
 #            displayName: 'Install Terraform'
 #            inputs:
 #              terraformVersion: $(terraformVersion)
