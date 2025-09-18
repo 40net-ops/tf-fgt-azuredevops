@@ -9,7 +9,7 @@ variables:
   workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
   
   # Azure service connection name (replace with your service connection)
-  azureServiceConnection: '40net-ops'
+  azureServiceConnection: 'EMEA-CSE'
   
   # Backend configuration
   backendResourceGroup: 'jvh01-rg'
