@@ -132,6 +132,19 @@ stages:
         artifact: 'terraform-plan-text'
         publishLocation: 'pipeline'
 
+- stage: FortiCNAPPIaC
+  displayName: 'FortiCNAPP'
+  jobs:
+  - job: TerraformIaCScan
+    displayName: 'IaC Scan'
+    steps:
+    - checkout: self
+    
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: $(terraformVersion)
+    
     - task: AzureCLI@2
       displayName: 'FortiCNAPP IaC'
       inputs:
