@@ -17,6 +17,12 @@ variables:
   backendContainerName: '40net-ops'
   backendKey: 'terraform.tfstate'
 
+  TF_VAR_subscription_id=$(ARM_SUBSCRIPTION_ID)
+  TF_VAR_prefix='jvh11'
+  TF_VAR_location='westeurope'
+  TF_VAR_username='azureuser'
+  TF_VAR_password=$(password)
+
 pool:
   vmImage: 'ubuntu-latest'
 
