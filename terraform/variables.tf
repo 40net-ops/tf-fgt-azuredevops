@@ -52,12 +52,12 @@ variable "fgt_version" {
 
 variable "fgt_byol_license_file" {
   description = "BYOL license file path for FGT"
-  default = ""
+  default     = ""
 }
 
 variable "fgt_byol_fortiflex_license_token" {
   description = "fortiflex token for FGT"
-  default = ""
+  default     = ""
 }
 
 variable "fgt_ssh_public_key_file" {
@@ -99,7 +99,7 @@ variable "fgt_additional_custom_data" {
 variable "fgt_vmsize" {
   description = "Azure VM size for FortiGate instances"
   type        = string
-  default = "Standard_F2s"
+  default     = "Standard_F2s"
 }
 
 ##############################################################################################################
