@@ -153,6 +153,7 @@ stages:
   jobs:
   - deployment: TerraformDeploy
     displayName: 'Deploy Infrastructure'
+    environment: 'production'
     strategy:
       runOnce:
         deploy:
