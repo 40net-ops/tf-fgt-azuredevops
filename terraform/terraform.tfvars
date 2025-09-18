@@ -3,10 +3,10 @@
 ############################################################################################################################################
 
 # Added name to each deployed resource
-#prefix = ""
+prefix = "jv11"
 
 # Azure region
-#location = ""
+location = "westeurope"
 
 # Username for FortiGate admin
 #username = ""
