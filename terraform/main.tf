@@ -47,8 +47,7 @@ resource "azurerm_public_ip" "fgtpip" {
 # FortiGate
 ##############################################################################################################
 module "fgt" {
-  #  source = "github.com/40net-cloud/terraform-azure-fortigate/modules/single"
-  source = "../../modules/single"
+  source = "github.com/40net-cloud/terraform-azure-fortigate/modules/single"
 
   prefix                           = var.prefix
   location                         = var.location
