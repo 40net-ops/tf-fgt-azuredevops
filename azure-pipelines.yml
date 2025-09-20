@@ -242,47 +242,13 @@ stages:
                 export ARM_TENANT_ID=$(ARM_TENANT_ID)
                 
                 # Apply the Terraform plan
-                terraform apply -input=false tfplan
+                if [ "$(RUN_DESTROY)" = "true" ]; then
+                  echo "Destroying infrastructure as RUN_DESTROY is set to true."
+                  terraform apply -destroy -input=false tfplan
+                else
+                  terraform apply -input=false tfplan
+                fi
                 
                 # Show outputs
                 echo "=== Terraform Outputs ==="
                 terraform output
-
-- stage: TerraformDestroy
-  displayName: 'Terraform Destroy'
-  dependsOn: TerraformApply
-  condition: eq(variables['RUN_DESTROY'], 'true')
-  jobs:
-  - job: TerraformDestroy
-    displayName: 'Terraform Destroy'
-    steps:
-    - checkout: self
-    
-    - task: TerraformInstaller@1
-      displayName: 'Install Terraform'
-      inputs:
-        terraformVersion: $(terraformVersion)
-    
-    - task: AzureCLI@2
-      displayName: 'Azure Login & Terraform Init & Terraform Destroy'
-      inputs:
-        azureSubscription: $(azureServiceConnection)
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        workingDirectory: $(workingDirectory)
-        inlineScript: |
-          # Set environment variables for Terraform
-          export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
-          export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
-          export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
-          export ARM_TENANT_ID=$(ARM_TENANT_ID)
-          export ARM_ACCESS_KEY=$(ARM_ACCESS_KEY)
-          
-          # Initialize Terraform
-          terraform init \
-            -backend-config="resource_group_name=$(backendResourceGroup)" \
-            -backend-config="storage_account_name=$(backendStorageAccount)" \
-            -backend-config="container_name=$(backendContainerName)" \
-            -backend-config="key=$(backendKey)"
-
-          terraform destroy -auto-approve
