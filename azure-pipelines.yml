@@ -17,7 +17,7 @@ variables:
   backendContainerName: '40net-ops'
   backendKey: 'terraform.tfstate'
 
-  prefix: 'jvh11'
+  prefix: 'jvh12'
   location: 'westeurope'
   username: 'azureuser'
 
