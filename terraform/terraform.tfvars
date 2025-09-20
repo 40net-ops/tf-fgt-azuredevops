@@ -3,7 +3,7 @@
 ############################################################################################################################################
 
 # Added name to each deployed resource
-prefix = "jv11"
+prefix = "jvh12"
 
 # Azure region
 location = "westeurope"

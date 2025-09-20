@@ -17,10 +17,6 @@ variables:
   backendContainerName: '40net-ops'
   backendKey: 'terraform.tfstate'
 
-  prefix: 'jvh12'
-  location: 'westeurope'
-  username: 'azureuser'
-
 pool:
   vmImage: 'ubuntu-latest'
 
