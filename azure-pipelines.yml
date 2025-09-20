@@ -244,9 +244,9 @@ stages:
                 # Apply the Terraform plan
                 if [ "$(RUN_DESTROY)" = "true" ]; then
                   echo "Destroying infrastructure as RUN_DESTROY is set to true."
-                  terraform destroy 
+                  terraform destroy -auto-approve
                 else
-                  terraform apply
+                  terraform apply -auto-approve
                 fi
                 
                 # Show outputs
