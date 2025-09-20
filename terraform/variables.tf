@@ -114,6 +114,8 @@ terraform {
       version = ">=2.0.0"
     }
   }
+  backend "azurerm" {
+  }
 }
 provider "azurerm" {
   features {}
