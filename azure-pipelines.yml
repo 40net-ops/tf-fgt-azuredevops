@@ -176,7 +176,7 @@ stages:
             -v $(System.DefaultWorkingDirectory):/app/src:rw \
             -e WORKSPACE=src \
             -e EXIT_FLAG='high' \
-            docker.io/lacework/codesec:stable lacework iac scan --directory=. --save-results
+            docker.io/lacework/codesec:stable lacework iac scan --directory=.
 
 - stage: TerraformApply
   displayName: 'Terraform Apply'
