@@ -1,0 +1,7 @@
+
+default:
+iac:
+  enabled: true
+  scan:
+
+checkovModuleDownload: true
