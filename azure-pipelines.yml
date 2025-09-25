@@ -175,8 +175,9 @@ stages:
             -e LW_ACCOUNT=$(LW_ACCOUNT) \
             -e LW_API_KEY=$(LW_API_KEY) \
             -e LW_API_SECRET=$(LW_API_SECRET) \
-            -e CI_PIPELINE_URL=$(BUILD_REPOSITORY_URI) \
-            -e CI_BUILD_ID=$(BUILD_BUILDID) \
+            -e CI_BUILD_ID=$(Build.BuildId) \
+            -e CI_GIT_REPO_URL=$(Build.Repository.Uri) \
+            -e CI_REPO_URL=$(Build.Repository.Uri) \
             -e CI_PALTFORM='AzureDevOps' \
             -v $(System.DefaultWorkingDirectory):/app/src:rw \
             -e WORKSPACE=src \
