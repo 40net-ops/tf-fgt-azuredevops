@@ -172,10 +172,6 @@ stages:
             echo "[debug] LW_ACCOUNT: $(LW_ACCOUNT), LW_API_KEY: $(LW_API_KEY), LW_API_SECRET: $(LW_API_SECRET)"
             echo "[debug] Build.BuildId: $(Build.BuildId) Build.BuildUri: $(Build.BuildUri)"
 
-#            -e JOB_NAME=$(Build.DefinitionName) \
-#            -e JENKINS_URL=$(Build.Repository.Uri) \
-#            -e BUILD_URL=$(Build.Repository.Uri) \
-#            -e BUILD_ID=$(Build.BuildId) \
             docker run \
             -e LW_ACCOUNT=$(LW_ACCOUNT) \
             -e LW_API_KEY=$(LW_API_KEY) \
