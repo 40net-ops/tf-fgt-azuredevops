@@ -182,6 +182,7 @@ stages:
             -e CI_BUILD_ID=$(Build.BuildId) \
             -e CI_PIPELINE_URL=$(Build.Repository.Uri) \
             -e CI_BUILD_URL=$(Build.Repository.Uri) \
+            -e CI_REPO_URL=$(Build.Repository.Uri) \
             -e WORKSPACE=src \
             -e EXIT_FLAG='high' \
             -v $(System.DefaultWorkingDirectory):/app/src:rw \
